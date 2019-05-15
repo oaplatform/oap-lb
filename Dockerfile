@@ -1,8 +1,11 @@
 FROM alpine:3.9.4
 
-ENV LB_VERSION 1.0.0
+ENV LB_VERSION 1.1.0
+
 ENV NGINX_VERSION 1.16.0
 ENV VTS_VERSION 0.1.18
+ENV STREAM_STS_VERSION 0.1.1
+ENV STS_VERSION 0.1.1
 
 RUN addgroup -S nginx \
   && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -21,10 +24,16 @@ RUN addgroup -S nginx \
   		geoip-dev \
   && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
+  && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
+  && curl -fSL https://github.com/vozlt/nginx-module-sts/archive/v$STS_VERSION.tar.gz  -o nginx-modules-sts.tar.gz \
   && mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz \
+	&& tar -zxC /usr/src -f nginx-modules-sts.tar.gz \
+	&& rm nginx.tar.gz nginx-modules-sts.tar.gz \
+	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
+	&& rm nginx.tar.gz nginx-modules-stream-sts.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
@@ -49,6 +58,8 @@ RUN addgroup -S nginx \
       --with-compat \
       --with-http_v2_module \
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
+      --add-module=/usr/src/nginx-module-sts-$VTS_VERSION \
+      --add-module=/usr/src/nginx-module-stream-sts-$VTS_VERSION \
   && make -j$(getconf _NPROCESSORS_ONLN) \
   && make install \
   && rm -rf /etc/nginx/html/ \
