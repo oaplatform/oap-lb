@@ -56,8 +56,8 @@ RUN addgroup -S nginx \
       --with-compat \
       --with-http_v2_module \
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
-      --add-module=/usr/src/nginx-module-sts-$VTS_VERSION \
-      --add-module=/usr/src/nginx-module-stream-sts-$VTS_VERSION \
+      --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
+      --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
   && make -j$(getconf _NPROCESSORS_ONLN) \
   && make install \
   && rm -rf /etc/nginx/html/ \
