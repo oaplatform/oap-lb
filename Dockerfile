@@ -29,11 +29,9 @@ RUN addgroup -S nginx \
   && mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
-	&& rm nginx.tar.gz nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-sts.tar.gz \
-	&& rm nginx.tar.gz nginx-modules-sts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
-	&& rm nginx.tar.gz nginx-modules-stream-sts.tar.gz \
+	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
