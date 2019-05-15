@@ -80,6 +80,7 @@ RUN addgroup -S nginx \
   && ln -sf /dev/stderr /var/log/nginx/error.log
 
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
 
 EXPOSE 80 443
 
