@@ -1,6 +1,6 @@
-FROM alpine:3.9.4
+FROM alpine:3.9
 
-ENV LB_VERSION 1.2.2
+ENV LB_VERSION 1.2.3
 
 ENV NGINX_VERSION 1.15.12
 ENV VTS_VERSION 0.1.18
@@ -22,7 +22,6 @@ RUN addgroup -S nginx \
   		libxslt-dev \
   		gd-dev \
   		geoip-dev \
-  		perl \
   		perl-dev \
   && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
