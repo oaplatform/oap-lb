@@ -1,6 +1,6 @@
 FROM alpine:3.9.4
 
-ENV LB_VERSION 1.1.1
+ENV LB_VERSION 1.2.0
 
 ENV NGINX_VERSION 1.15.12
 ENV VTS_VERSION 0.1.18
@@ -22,6 +22,7 @@ RUN addgroup -S nginx \
   		libxslt-dev \
   		gd-dev \
   		geoip-dev \
+  		perl-dev \
   && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
@@ -53,6 +54,7 @@ RUN addgroup -S nginx \
       --with-stream_ssl_preread_module \
       --with-stream_realip_module \
       --with-http_slice_module \
+      --with-http_perl_module=dynamic \
       --with-compat \
       --with-http_v2_module \
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
@@ -63,9 +65,12 @@ RUN addgroup -S nginx \
   && rm -rf /etc/nginx/html/ \
   && mkdir /etc/nginx/conf.d/ \
   && mkdir -p /usr/share/nginx/html/ \
+  && mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
+  && ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
   && install -m644 html/index.html /usr/share/nginx/html/ \
   && install -m644 html/50x.html /usr/share/nginx/html/ \
   && strip /usr/sbin/nginx* \
+  && strip /usr/lib/nginx/modules/*.so \
   && rm -rf /usr/src/nginx-$NGINX_VERSION \
   \
   && apk add --no-cache --virtual .gettext gettext \
