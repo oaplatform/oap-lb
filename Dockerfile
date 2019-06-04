@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-ENV LB_VERSION 1.2.4
+ENV LB_VERSION 1.2.5
 
 ENV NGINX_VERSION 1.15.12
 ENV VTS_VERSION 0.1.18
@@ -23,7 +23,6 @@ RUN addgroup -S nginx \
   		gd-dev \
   		geoip-dev \
   		perl-dev \
-  		sudo \
   && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
@@ -81,7 +80,7 @@ RUN addgroup -S nginx \
   			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
   )" \
   && apk add --no-cache --virtual .nginx-rundeps $runDeps \
-  && apk add --no-cache logrotate \
+  && apk add --no-cache logrotate sudo \
   && apk del .build-deps \
   && apk del .gettext \
   && mv /tmp/envsubst /usr/local/bin/ \
