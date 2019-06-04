@@ -93,7 +93,7 @@ RUN addgroup -S nginx \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
-COPY sudoers.d
+COPY sudoers.d/reload /etc/sudoers.d/reload
 
 EXPOSE 80 443
 
