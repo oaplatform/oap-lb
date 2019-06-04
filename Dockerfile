@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-ENV LB_VERSION 1.2.3
+ENV LB_VERSION 1.2.4
 
 ENV NGINX_VERSION 1.15.12
 ENV VTS_VERSION 0.1.18
@@ -23,6 +23,7 @@ RUN addgroup -S nginx \
   		gd-dev \
   		geoip-dev \
   		perl-dev \
+  		sudo \
   && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
@@ -92,6 +93,7 @@ RUN addgroup -S nginx \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
+COPY sudoers.d
 
 EXPOSE 80 443
 

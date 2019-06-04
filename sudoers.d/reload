@@ -1,0 +1,1 @@
+nginx ALL=(ALL:ALL) NOPASSWD:/usr/sbin/nginx -s reload
