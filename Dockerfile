@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-ENV LB_VERSION 1.2.5
+ENV LB_VERSION 1.2.6
 
 ENV NGINX_VERSION 1.15.12
 ENV VTS_VERSION 0.1.18
@@ -93,6 +93,7 @@ RUN addgroup -S nginx \
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
 COPY sudoers.d/reload /etc/sudoers.d/reload
+COPY etc/logrotate.d/nginx /etc/logrotate.d/nginx
 
 EXPOSE 80 443
 
