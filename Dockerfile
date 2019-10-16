@@ -1,6 +1,6 @@
 FROM centos:centos7.6.1810
 
-ENV LB_VERSION 2.0.2
+ENV LB_VERSION 2.0.3
 
 ENV NGINX_VERSION 1.17.4
 ENV VTS_VERSION 0.1.18
@@ -122,8 +122,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
 COPY sudoers.d/reload /etc/sudoers.d/reload
 COPY etc/logrotate.d/nginx /etc/logrotate.d/nginx
-
-RUN fcron -b -l 5
 
 EXPOSE 80 443
 
