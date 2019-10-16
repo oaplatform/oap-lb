@@ -1,11 +1,12 @@
 FROM centos:centos7.6.1810
 
-ENV LB_VERSION 2.0.1
+ENV LB_VERSION 2.0.2
 
 ENV NGINX_VERSION 1.17.4
 ENV VTS_VERSION 0.1.18
 ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
+ENV FCRON_VERSION 3.2.1
 
 RUN groupadd --system nginx \
   && adduser --system --home /var/cache/nginx --shell /sbin/nologin -g nginx nginx \
@@ -89,6 +90,19 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
   && ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
 
+RUN curl -fSL http://fcron.free.fr/archives/fcron-$FCRON_VERSION.src.tar.gz -o fcron.tar.gz \
+  && mkdir -p /usr/src \
+	&& tar -zxC /usr/src -f fcron.tar.gz \
+	&& rm fcron.tar.gz \
+  && cd /usr/src/fcron-$FCRON_VERSION \
+  && ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --with-sendmail=no \
+  && make -j$(getconf _NPROCESSORS_ONLN) \
+  && make install \
+  && rm -rf /usr/src/fcron-$FCRON_VERSION
+
 RUN yum erase -y gcc \
       glibc-devel \
       make \
@@ -108,6 +122,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d/vts.conf /etc/nginx/conf.d/vts.conf
 COPY sudoers.d/reload /etc/sudoers.d/reload
 COPY etc/logrotate.d/nginx /etc/logrotate.d/nginx
+
+RUN fcron -b -l 5
 
 EXPOSE 80 443
 
