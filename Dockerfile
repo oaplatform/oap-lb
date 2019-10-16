@@ -1,6 +1,6 @@
 FROM centos:centos7.6.1810
 
-ENV LB_VERSION 2.0.0
+ENV LB_VERSION 2.0.1
 
 ENV NGINX_VERSION 1.17.4
 ENV VTS_VERSION 0.1.18
@@ -39,10 +39,6 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
 	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && CFLAGS="-g -O2 -fvisibility=hidden -pipe -W -Wall -Wpointer-arith -Wno-unused-parameter -fPIC" \
-  && export CFLAGS \
-  && LDFLAGS=-fPIC \
-  && export LDFLAGS \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
       --modules-path=/usr/lib/nginx/modules \
@@ -69,6 +65,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
       --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
       --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
+      --with-ld-opt="-Wl,-E" \
   && make -j$(getconf _NPROCESSORS_ONLN) \
   && make install \
   && rm -rf /etc/nginx/html/ \
