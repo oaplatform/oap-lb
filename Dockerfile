@@ -1,6 +1,6 @@
 FROM centos:centos7.7.1908
 
-ENV LB_VERSION 2.0.5
+ENV LB_VERSION 2.1.0
 
 ENV NGINX_VERSION 1.17.9
 ENV VTS_VERSION 0.1.18
@@ -8,6 +8,8 @@ ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
+
+COPY keep-alive.patch /tmp/keep-alive.patch
 
 RUN groupadd --system nginx \
   && adduser --system --home /var/cache/nginx --shell /sbin/nologin -g nginx nginx \
@@ -47,6 +49,8 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/nginx-$NGINX_VERSION \
+  && patch -p1 /tmp/keep-alive.patch \
+  && rm -f /tmp/keep-alive.patch \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
       --modules-path=/usr/lib/nginx/modules \
