@@ -2,11 +2,12 @@ FROM centos:centos7.7.1908
 
 ENV LB_VERSION 2.0.4
 
-ENV NGINX_VERSION 1.17.4
+ENV NGINX_VERSION 1.17.9
 ENV VTS_VERSION 0.1.18
 ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
 ENV FCRON_VERSION 3.2.1
+ENV HEADERS_MORE_NGINX 0.33
 
 RUN groupadd --system nginx \
   && adduser --system --home /var/cache/nginx --shell /sbin/nologin -g nginx nginx \
@@ -36,11 +37,13 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-sts/archive/v$STS_VERSION.tar.gz  -o nginx-modules-sts.tar.gz \
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
+  && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-sts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
+	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/nginx-$NGINX_VERSION \
@@ -70,6 +73,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
       --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
       --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
+      --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
       --with-ld-opt="-Wl,-E" \
   && make -j$(getconf _NPROCESSORS_ONLN) \
@@ -84,6 +88,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
   && rm -rf /usr/src/nginx-module-vts-$VTS_VERSION \
   && rm -rf /usr/src/nginx-module-sts-$STS_VERSION \
   && rm -rf /usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
+  && rm -rf /usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
   && rm -rf /usr/src/ngx_empty_png-master \
   \
   && mv /usr/bin/envsubst /tmp/ \
