@@ -50,7 +50,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && patch -p1 /tmp/keep-alive.patch \
+  && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
