@@ -33,7 +33,8 @@ RUN groupadd --system nginx \
   		htop \
   		tzdata \
   		unzip \
-  		sysvinit-tools
+  		sysvinit-tools \
+  		patch
 RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \ 
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
@@ -132,6 +133,7 @@ RUN yum erase -y gcc \
       gd-devel \
       perl-devel \
       gettext \
+      patch \
   && yum clean all \
   && rm -rf /var/cache/yum
 
