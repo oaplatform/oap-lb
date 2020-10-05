@@ -1,8 +1,8 @@
-FROM centos:centos7.7.1908
+FROM ubuntu:20.10
 
-ENV LB_VERSION 2.1.1
+ENV LB_VERSION 3.0.0
 
-ENV NGINX_VERSION 1.17.9
+ENV NGINX_VERSION 1.19.2
 ENV VTS_VERSION 0.1.18
 ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
@@ -11,30 +11,26 @@ ENV HEADERS_MORE_NGINX 0.33
 
 COPY keep-alive.patch /tmp/keep-alive.patch
 
-RUN groupadd --system nginx \
-  && adduser --system --home /var/cache/nginx --shell /sbin/nologin -g nginx nginx \
-  && yum install epel-release -y \
-  && yum install -y \
-  		gcc \
-  		glibc-devel \
-  		make \
-  		openssl-devel \
-  		pcre-devel \
-  		zlib-devel \
-  		kernel-headers \
-  		curl \
-  		libxslt-devel \
-  		gd-devel \
-  		perl-devel \
-  		perl-ExtUtils-Embed \
-  		logrotate \
-  		gettext \
-  		pax-utils \
-  		htop \
-  		tzdata \
-  		unzip \
-  		sysvinit-tools \
-  		patch
+RUN groupadd --system nginx --gid 101 \
+    && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx \
+    && apt update && apt upgrade -y \
+    && apt install -y \
+    software-properties-common \
+    mc \
+    htop \
+    ufw \
+    curl \
+    gcc \
+    make \
+    libssl-dev \
+    libpcre3 libpcre3-dev \
+    zlib1g-dev \
+    libperl-dev \
+    perl-modules \
+    unzip \
+    patch \
+    gettext-base \
+    vim
 RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \ 
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
@@ -122,20 +118,8 @@ RUN curl -fSL http://fcron.free.fr/archives/fcron-$FCRON_VERSION.src.tar.gz -o f
   && make install \
   && rm -rf /usr/src/fcron-$FCRON_VERSION
 
-RUN yum erase -y gcc \
-      glibc-devel \
-      make \
-      openssl-devel \
-      pcre-devel \
-      zlib-devel \
-      kernel-headers \
-      libxslt-devel \
-      gd-devel \
-      perl-devel \
-      gettext \
-      patch \
-  && yum clean all \
-  && rm -rf /var/cache/yum
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 
 COPY nginx.conf /etc/nginx/nginx.conf
