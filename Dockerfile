@@ -9,11 +9,17 @@ ENV STS_VERSION 0.1.1
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
 
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=UTC
+
 COPY keep-alive.patch /tmp/keep-alive.patch
 
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN groupadd --system nginx --gid 101 \
-    && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx \
-    && apt update && apt upgrade -y \
+    && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx
+RUN apt update \
     && apt install -y \
     software-properties-common \
     mc \
