@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
 
-ENV LB_VERSION 3.0.3
+ENV LB_VERSION 3.1.0
 
-ENV NGINX_VERSION 1.19.2
+ENV NGINX_VERSION 1.19.9
 ENV VTS_VERSION 0.1.18
 ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
@@ -14,6 +14,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
 
 COPY keep-alive.patch /tmp/keep-alive.patch
+COPY ngr_timer_lazy_delay_50.patch /tmp/ngr_timer_lazy_delay_50.patch
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -53,6 +54,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
+  && patch -p1 < /tmp/ngr_timer_lazy_delay_50.patch \
   && rm -f /tmp/keep-alive.patch \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
