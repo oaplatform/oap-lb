@@ -20,27 +20,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN groupadd --system nginx --gid 101 \
     && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx
-RUN apt update \
-    && apt install -y \
-    software-properties-common
-RUN apt install -y mc
-RUN apt install -y htop
-RUN apt install -y ufw
-RUN apt install -y curl
-RUN apt install -y gcc
-RUN apt install -y make
-RUN apt install -y libssl-dev
-RUN apt install -y libpcre3
-RUN apt install -y libpcre3-dev
-RUN apt install -y zlib1g-dev
-RUN apt install -y libperl-dev
-RUN apt install -y perl-modules
-RUN apt install -y unzip
-RUN apt install -y patch
-RUN apt install -y gettext-base
-RUN apt install -y gettext-base
-RUN apt install -y vim
-RUN apt install -y nano
+RUN echo ${PATH}
 RUN apt update \
     && apt install -y \
     software-properties-common \
