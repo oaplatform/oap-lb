@@ -1,4 +1,4 @@
-FROM ubuntu:20.10
+FROM ubuntu:18.04
 
 ENV LB_VERSION 3.1.0
 
@@ -20,7 +20,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN groupadd --system nginx --gid 101 \
     && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx
-RUN echo ${PATH}
 RUN apt update \
     && apt install -y \
     software-properties-common \
