@@ -21,7 +21,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN groupadd --system nginx --gid 101 \
     && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx
 
-// https://github.com/docker/buildx/issues/495#issuecomment-772267281
+# https://github.com/docker/buildx/issues/495#issuecomment-772267281
 RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split
 RUN ln -s /usr/bin/dpkg-deb /usr/sbin/dpkg-deb
 RUN ln -s /bin/tar /usr/sbin/tar
