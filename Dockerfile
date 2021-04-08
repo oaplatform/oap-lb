@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.10
 
 ENV LB_VERSION 3.1.0
 
@@ -20,6 +20,12 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN groupadd --system nginx --gid 101 \
     && adduser --system --home /var/cache/nginx --shell /sbin/nologin --ingroup nginx nginx
+
+// https://github.com/docker/buildx/issues/495#issuecomment-772267281
+RUN ln -s /usr/bin/dpkg-split /usr/sbin/dpkg-split
+RUN ln -s /usr/bin/dpkg-deb /usr/sbin/dpkg-deb
+RUN ln -s /bin/tar /usr/sbin/tar
+
 RUN apt update \
     && apt install -y \
     software-properties-common \
