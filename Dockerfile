@@ -1,6 +1,6 @@
 FROM ubuntu:20.10
 
-ENV LB_VERSION 3.2.0
+ENV LB_VERSION 3.2.1
 
 ENV NGINX_VERSION 1.19.9
 ENV VTS_VERSION 0.1.18
@@ -144,6 +144,6 @@ COPY etc/logrotate.d/nginx /etc/logrotate.d/nginx
 
 EXPOSE 80 443
 
-STOPSIGNAL SIGTERM
+STOPSIGNAL SIGQUIT
 
 CMD ["nginx", "-g", "daemon off;"]
