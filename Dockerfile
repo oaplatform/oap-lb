@@ -1,6 +1,6 @@
 FROM ubuntu:20.10
 
-ENV LB_VERSION 3.1.2
+ENV LB_VERSION 3.2.0
 
 ENV NGINX_VERSION 1.19.9
 ENV VTS_VERSION 0.1.18
@@ -8,12 +8,14 @@ ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
+ENV UPSTREAM_CHECK_MODULE 0.3.0
 
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
 
 COPY keep-alive.patch /tmp/keep-alive.patch
+COPY check_1.18.0.patch /tmp/check_1.18.0.patch
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -45,17 +47,21 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
   && curl -fSL https://github.com/vozlt/nginx-module-sts/archive/v$STS_VERSION.tar.gz  -o nginx-modules-sts.tar.gz \
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
+  && curl -fSL https://github.com/yaoweibin/nginx_upstream_check_module/archive/refs/tags/v$UPSTREAM_CHECK_MODULE.tar.gz -o upstream-check-nginx-module.tar.gz \
   && mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-sts.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
+	&& tar -zxC /usr/src -f upstream-check-nginx-module.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
-	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip \
+	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip upstream-check-nginx-module.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
+  && patch -p1 < /tmp/check_1.18.0.patch \
   && rm -f /tmp/keep-alive.patch \
+  && rm -f /tmp/check_1.18.0.patch \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
       --modules-path=/usr/lib/nginx/modules \
@@ -83,6 +89,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
       --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
       --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
+      --add-module=/usr/src/nginx_upstream_check_module-$UPSTREAM_CHECK_MODULE \
       --add-module=/usr/src/ngx_empty_png-master \
       --with-ld-opt="-Wl,-E" \
   && make -j$(getconf _NPROCESSORS_ONLN) \
