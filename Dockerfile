@@ -1,8 +1,8 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 
 ENV LB_VERSION 3.2.4
 
-ENV NGINX_VERSION 1.19.2
+ENV NGINX_VERSION 1.18.0
 ENV VTS_VERSION 0.1.18
 ENV STREAM_STS_VERSION 0.1.1
 ENV STS_VERSION 0.1.1
@@ -59,7 +59,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
 	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip upstream-check-nginx-module.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
-#  && patch -p1 < /tmp/check_1.18.0.patch \
+  && patch -p1 < /tmp/check_1.18.0.patch \
   && rm -f /tmp/keep-alive.patch \
   && rm -f /tmp/check_1.18.0.patch \
   && ./configure --prefix=/etc/nginx \
@@ -89,6 +89,7 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
       --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
       --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
+      --add-module=/usr/src/nginx_upstream_check_module-$UPSTREAM_CHECK_MODULE \
       --add-module=/usr/src/ngx_empty_png-master \
       --with-ld-opt="-Wl,-E" \
   && make -j$(getconf _NPROCESSORS_ONLN) \
