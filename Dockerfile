@@ -1,21 +1,17 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
-ENV LB_VERSION 3.2.4
+ENV LB_VERSION 4.0.0
 
-ENV NGINX_VERSION 1.18.0
+ENV TENGINE_VERSION 2.3.3
 ENV VTS_VERSION 0.1.18
-ENV STREAM_STS_VERSION 0.1.1
-ENV STS_VERSION 0.1.1
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
-ENV UPSTREAM_CHECK_MODULE 0.3.0
 
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
 
 COPY keep-alive.patch /tmp/keep-alive.patch
-COPY check_1.18.0.patch /tmp/check_1.18.0.patch
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -41,27 +37,21 @@ RUN apt update \
     gettext-base \
     vim \
     nano
-RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \ 
+RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz -o tengine.tar.gz \ 
   && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
-  && curl -fSL https://github.com/vozlt/nginx-module-stream-sts/archive/v$STREAM_STS_VERSION.tar.gz  -o nginx-modules-stream-sts.tar.gz \
-  && curl -fSL https://github.com/vozlt/nginx-module-sts/archive/v$STS_VERSION.tar.gz  -o nginx-modules-sts.tar.gz \
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
-  && curl -fSL https://github.com/yaoweibin/nginx_upstream_check_module/archive/refs/tags/v$UPSTREAM_CHECK_MODULE.tar.gz -o upstream-check-nginx-module.tar.gz \
   && mkdir -p /usr/src \
-	&& tar -zxC /usr/src -f nginx.tar.gz \
+	&& tar -zxC /usr/src -f tengine.tar.gz \
 	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
-	&& tar -zxC /usr/src -f nginx-modules-sts.tar.gz \
-	&& tar -zxC /usr/src -f nginx-modules-stream-sts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
-	&& tar -zxC /usr/src -f upstream-check-nginx-module.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
-	&& rm nginx.tar.gz nginx-modules-vts.tar.gz nginx-modules-sts.tar.gz nginx-modules-stream-sts.tar.gz ngx_empty_png.zip upstream-check-nginx-module.tar.gz \
-  && cd /usr/src/nginx-$NGINX_VERSION \
+	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
+  && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
-  && patch -p1 < /tmp/check_1.18.0.patch \
-  && rm -f /tmp/keep-alive.patch \
-  && rm -f /tmp/check_1.18.0.patch \
+  && rm -f /tmp/keep-alive.patch
+
+RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && ./configure --prefix=/etc/nginx \
       --sbin-path=/usr/sbin/nginx \
       --modules-path=/usr/lib/nginx/modules \
@@ -85,25 +75,22 @@ RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.ta
       --with-http_perl_module \
       --with-compat \
       --with-http_v2_module \
+      --add-module=./modules/ngx_http_upstream_vnswrr_module \
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
-      --add-module=/usr/src/nginx-module-sts-$STS_VERSION \
-      --add-module=/usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
-      --add-module=/usr/src/nginx_upstream_check_module-$UPSTREAM_CHECK_MODULE \
-      --add-module=/usr/src/ngx_empty_png-master \
-      --with-ld-opt="-Wl,-E" \
+      --add-module=/usr/src/ngx_empty_png-master
+
+RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && make -j$(getconf _NPROCESSORS_ONLN) \
   && make install \
   && rm -rf /etc/nginx/html/ \
   && mkdir /etc/nginx/conf.d/ \
   && mkdir -p /usr/share/nginx/html/ \
-  && install -m644 /usr/src/nginx-$NGINX_VERSION/html/index.html /usr/share/nginx/html/ \
-  && install -m644 /usr/src/nginx-$NGINX_VERSION/html/50x.html /usr/share/nginx/html/ \
+  && install -m644 /usr/src/tengine-$TENGINE_VERSION/html/index.html /usr/share/nginx/html/ \
+  && install -m644 /usr/src/tengine-$TENGINE_VERSION/html/50x.html /usr/share/nginx/html/ \
   && strip /usr/sbin/nginx* \
-  && rm -rf /usr/src/nginx-$NGINX_VERSION \
+  && rm -rf /usr/src/tengine-$TENGINE_VERSION \
   && rm -rf /usr/src/nginx-module-vts-$VTS_VERSION \
-  && rm -rf /usr/src/nginx-module-sts-$STS_VERSION \
-  && rm -rf /usr/src/nginx-module-stream-sts-$STREAM_STS_VERSION \
   && rm -rf /usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
   && rm -rf /usr/src/ngx_empty_png-master \
   \
