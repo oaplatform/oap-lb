@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV LB_VERSION 4.0.0
+ENV LB_VERSION 4.0.1
 
 ENV TENGINE_VERSION 2.3.3
 ENV VTS_VERSION 0.1.18
@@ -76,6 +76,7 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --with-compat \
       --with-http_v2_module \
       --add-module=./modules/ngx_http_upstream_vnswrr_module \
+      --add-module=./modules/ngx_http_upstream_check_module \
       --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master
