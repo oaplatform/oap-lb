@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-ENV LB_VERSION 4.0.3
+ENV LB_VERSION 4.0.4
 
 ENV TENGINE_VERSION 2.3.3
 ENV VTS_VERSION 0.1.18
@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
 
 COPY keep-alive.patch /tmp/keep-alive.patch
-COPY ngr_timer_lazy_delay_200.patch /tmp/ngr_timer_lazy_delay_200.patch
+COPY ngr_timer_lazy_delay_100.patch /tmp/ngr_timer_lazy_delay_100.patch
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -50,9 +50,9 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
 	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
-  && patch -p1 < /tmp/ngr_timer_lazy_delay_200.patch \
+  && patch -p1 < /tmp/ngr_timer_lazy_delay_100.patch \
   && rm -f /tmp/keep-alive.patch \
-  && rm -f /tmp/ngr_timer_lazy_delay_200.patch
+  && rm -f /tmp/ngr_timer_lazy_delay_100.patch
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && ./configure --prefix=/etc/nginx \
