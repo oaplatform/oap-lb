@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-ENV LB_VERSION 4.0.4
+ENV LB_VERSION 4.0.5
 
 ENV TENGINE_VERSION 2.3.3
 ENV VTS_VERSION 0.1.18
@@ -21,6 +21,9 @@ RUN groupadd --system nginx --gid 101 \
 
 RUN apt update \
     && apt install -y \
+    libhttp-async-perl \
+    procps \
+    net-tools \
     software-properties-common \
     mc \
     htop \
