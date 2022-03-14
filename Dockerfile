@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM public.ecr.aws/debian/debian:bullseye-slim
 
 ENV LB_VERSION 4.0.7
 
