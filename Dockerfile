@@ -81,9 +81,9 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --with-stream_realip_module \
       --with-http_slice_module \
       --with-http_perl_module \
-      --with-http_sysguard_module \
       --with-compat \
       --with-http_v2_module \
+      --add-module=./modules/ngx_http_sysguard_module \
       --add-module=./modules/ngx_http_upstream_check_module \
       --add-module=./modules/ngx_http_lua_module \
       --add-module=./modules/ngx_http_dyups_module \
