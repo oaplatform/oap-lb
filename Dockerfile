@@ -94,7 +94,7 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=./modules/ngx_http_sysguard_module \
       --add-module=./modules/ngx_http_upstream_check_module \
       --add-module=./modules/ngx_http_lua_module \
-      --add-module=./modules/ngx_http_dyups_module \
+      --add-module=./modules/ngx_http_upstream_dyups_module \
       --add-module=./modules/ngx_http_upstream_vnswrr_module \
       --add-module=./modules/ngx_http_reqstat_module \
 #      --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
