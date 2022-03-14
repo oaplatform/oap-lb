@@ -53,7 +53,7 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
 	&& tar -zxC /usr/src -f tengine.tar.gz \
 #	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
-	&& tar -zxC /usr/src -f LuaJIT-2.0.5.tar.gz \
+	&& tar -zxC /usr/src -f LuaJIT-2.1.0-beta3.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
 #	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
