@@ -47,7 +47,7 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
-  && curl -fSL http://luajit.org/download/LuaJIT-2.0.5.tar.gz -o LuaJIT-2.0.5.tar.gz \
+  && curl -fSL https://luajit.org/download/LuaJIT-2.1.0-beta3.tar.gz -o LuaJIT-2.1.0-beta3.tar.gz \
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
@@ -61,11 +61,11 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
 
-RUN cd /usr/src/LuaJIT-2.0.5 \
+RUN cd /usr/src/LuaJIT-2.1.0-beta3 \
     && make install
 
 ENV LUAJIT_LIB /usr/local/lib
-ENV LUAJIT_INC /usr/local/include/luajit-2.0
+ENV LUAJIT_INC /usr/local/include/luajit-2.1
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && ./configure --prefix=/etc/nginx \
