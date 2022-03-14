@@ -50,11 +50,11 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
-	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
+#	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
+#	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
