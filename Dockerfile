@@ -41,24 +41,31 @@ RUN apt update \
     patch \
     gettext-base \
     vim \
-    nano \
-    libluajit-5.1-dev
+    nano
 RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz -o tengine.tar.gz \
 #  && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
+  && curl -fSL http://luajit.org/download/LuaJIT-2.0.5.tar.gz -o LuaJIT-2.0.5.tar.gz \
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
 #	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
+	&& tar -zxC /usr/src -f LuaJIT-2.0.5.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
 #	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
+
+RUN cd /usr/src/LuaJIT-2.0.5 \
+    && make install
+
+ENV LUAJIT_LIB /usr/local/lib
+ENV LUAJIT_INC /usr/local/include/luajit-2.0
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && ./configure --prefix=/etc/nginx \
