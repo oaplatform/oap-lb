@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 4.0.7
+ENV LB_VERSION 5.0.0
 
 ENV TENGINE_VERSION 2.3.3
 #ENV VTS_VERSION 0.1.18
