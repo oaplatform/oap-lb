@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.0
+ENV LB_VERSION 5.0.1
 
 ENV TENGINE_VERSION 2.3.3
 #ENV VTS_VERSION 0.1.18
@@ -99,7 +99,8 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=./modules/ngx_http_reqstat_module \
 #      --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
-      --add-module=/usr/src/ngx_empty_png-master
+      --add-module=/usr/src/ngx_empty_png-master \
+      --with-cc-opt=-O2 --with-ld-opt='-Wl,-rpath,/usr/local/lib'
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && make -j$(getconf _NPROCESSORS_ONLN) \
