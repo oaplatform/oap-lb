@@ -43,7 +43,6 @@ RUN apt update \
     vim \
     nano
 RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz -o tengine.tar.gz \
-#  && curl -fSL https://github.com/vozlt/nginx-module-vts/archive/v$VTS_VERSION.tar.gz  -o nginx-modules-vts.tar.gz \
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
@@ -51,12 +50,11 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
-#	&& tar -zxC /usr/src -f nginx-modules-vts.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
 	&& tar -zxC /usr/src -f LuaJIT-2.1.0-beta3.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-#	&& rm tengine.tar.gz nginx-modules-vts.tar.gz ngx_empty_png.zip \
+	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip LuaJIT-2.1.0-beta3.tar.gz headers-more-nginx-module.tar.gz \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
@@ -97,7 +95,6 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=./modules/ngx_http_upstream_dyups_module \
       --add-module=./modules/ngx_http_upstream_vnswrr_module \
       --add-module=./modules/ngx_http_reqstat_module \
-#      --add-module=/usr/src/nginx-module-vts-$VTS_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
       --with-cc-opt=-O2 --with-ld-opt='-Wl,-rpath,/usr/local/lib'
@@ -112,7 +109,6 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && install -m644 /usr/src/tengine-$TENGINE_VERSION/html/50x.html /usr/share/nginx/html/ \
   && strip /usr/sbin/nginx* \
   && rm -rf /usr/src/tengine-$TENGINE_VERSION \
-#  && rm -rf /usr/src/nginx-module-vts-$VTS_VERSION \
   && rm -rf /usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
   && rm -rf /usr/src/ngx_empty_png-master \
   \
