@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.3
+ENV LB_VERSION 5.0.4
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
@@ -97,7 +97,8 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=./modules/ngx_http_reqstat_module \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
-      --with-cc-opt=-O2 --with-ld-opt='-Wl,-rpath,/usr/local/lib'
+      --with-cc-opt='-g -Ofast -march=native -ffast-math -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
+      --with-ld-opt='-Wl,-rpath,/usr/local/lib'
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && make -j$(getconf _NPROCESSORS_ONLN) \
