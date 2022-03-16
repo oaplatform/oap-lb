@@ -1,9 +1,9 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.2
+ENV LB_VERSION 5.0.3
 
 ENV TENGINE_VERSION 2.3.3
-#ENV VTS_VERSION 0.1.18
+ENV LUA_JIT_VERSION 2.1-20220310
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
 
@@ -46,20 +46,20 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && curl -fSL https://github.com/APNIC-Labs/ngx_empty_png/archive/master.zip -o ngx_empty_png.zip \
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
-  && curl -fSL https://luajit.org/download/LuaJIT-2.1.0-beta3.tar.gz -o LuaJIT-2.1.0-beta3.tar.gz \
+  && curl -fSL https://github.com/openresty/luajit2/archive/refs/tags/v$LUA_JIT_VERSION.tar.gz -o luajit2-$LUA_JIT_VERSION.tar.gz \
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
-	&& tar -zxC /usr/src -f LuaJIT-2.1.0-beta3.tar.gz \
+	&& tar -zxC /usr/src -f luajit2-$LUA_JIT_VERSION.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip LuaJIT-2.1.0-beta3.tar.gz headers-more-nginx-module.tar.gz \
+	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
 
-RUN cd /usr/src/LuaJIT-2.1.0-beta3 \
+RUN cd /usr/src/luajit2-$LUA_JIT_VERSION \
     && make install
 
 ENV LUAJIT_LIB /usr/local/lib
