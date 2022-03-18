@@ -1,11 +1,12 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.4
+ENV LB_VERSION 5.0.5
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
 ENV FCRON_VERSION 3.2.1
 ENV HEADERS_MORE_NGINX 0.33
+ENV UPSYNC_VERSION 2.1.3
 
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -47,19 +48,22 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
   && curl -fSL https://github.com/openresty/luajit2/archive/refs/tags/v$LUA_JIT_VERSION.tar.gz -o luajit2-$LUA_JIT_VERSION.tar.gz \
+  && curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
 	&& tar -zxC /usr/src -f luajit2-$LUA_JIT_VERSION.tar.gz \
+	&& tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz \
+	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
 
 RUN cd /usr/src/luajit2-$LUA_JIT_VERSION \
+    && make -j$(getconf _NPROCESSORS_ONLN) \
     && make install
 
 ENV LUAJIT_LIB /usr/local/lib
@@ -89,12 +93,12 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --with-http_perl_module \
       --with-compat \
       --with-http_v2_module \
+      --add-module=./modules/ngx_http_lua_module \
       --add-module=./modules/ngx_http_sysguard_module \
       --add-module=./modules/ngx_http_upstream_check_module \
-      --add-module=./modules/ngx_http_lua_module \
-      --add-module=./modules/ngx_http_upstream_dyups_module \
       --add-module=./modules/ngx_http_upstream_vnswrr_module \
       --add-module=./modules/ngx_http_reqstat_module \
+      --add-module=/usr/src/nginx-upsync-module-$UPSYNC_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
       --with-cc-opt='-g -Ofast -march=native -ffast-math -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
