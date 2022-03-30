@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.5
+ENV LB_VERSION 5.0.6
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
@@ -56,7 +56,7 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
 	&& tar -zxC /usr/src -f luajit2-$LUA_JIT_VERSION.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
@@ -66,7 +66,8 @@ RUN curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/
   && tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
   && cd /usr/src/nginx-upsync-module-$UPSYNC_VERSION \
   && patch -p1 < /upsync_max_conns.patch \
-  && rm -f /tmp/upsync_max_conns.patch
+  && rm -f /tmp/upsync_max_conns.patch \
+  && rm nginx-upsync-module-$UPSYNC_VERSION.tar.gz
 
 RUN cd /usr/src/luajit2-$LUA_JIT_VERSION \
     && make -j$(getconf _NPROCESSORS_ONLN) \
