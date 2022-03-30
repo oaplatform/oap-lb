@@ -65,7 +65,7 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
 RUN curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz
 RUN tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz
 RUN cd /usr/src/nginx-upsync-module-$UPSYNC_VERSION
-RUN patch -p1 < /upsync_max_conns.patch
+RUN patch -p1 < /tmp/upsync_max_conns.patch
 RUN rm -f /tmp/upsync_max_conns.patch
 RUN rm nginx-upsync-module-$UPSYNC_VERSION.tar.gz
 
