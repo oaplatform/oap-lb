@@ -62,12 +62,12 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && rm -f /tmp/keep-alive.patch
 
 # https://github.com/weibocom/nginx-upsync-module/pull/222
-RUN curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz
-RUN tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz
-RUN cd /usr/src/nginx-upsync-module-$UPSYNC_VERSION \
-    && patch -p1 < /tmp/upsync_max_conns.patch
-RUN rm -f /tmp/upsync_max_conns.patch
-RUN rm nginx-upsync-module-$UPSYNC_VERSION.tar.gz
+RUN curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && rm nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && cd /usr/src/nginx-upsync-module-$UPSYNC_VERSION \
+    && patch -p1 < /tmp/upsync_max_conns.patch \
+    && rm -f /tmp/upsync_max_conns.patch
 
 RUN cd /usr/src/luajit2-$LUA_JIT_VERSION \
     && make -j$(getconf _NPROCESSORS_ONLN) \
