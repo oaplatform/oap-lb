@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ENV LB_VERSION 5.0.5
+ENV LB_VERSION 5.0.6
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
@@ -13,6 +13,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
 
 COPY keep-alive.patch /tmp/keep-alive.patch
+COPY upsync_max_conns.patch /tmp/upsync_max_conns.patch
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -48,19 +49,25 @@ RUN curl -fSL https://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.g
   && curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v$HEADERS_MORE_NGINX.tar.gz -o headers-more-nginx-module.tar.gz \
   && curl -fSL https://github.com/vipwangtian/tengine-prometheus/archive/refs/heads/master.zip -o tengine-prometheus.zip \
   && curl -fSL https://github.com/openresty/luajit2/archive/refs/tags/v$LUA_JIT_VERSION.tar.gz -o luajit2-$LUA_JIT_VERSION.tar.gz \
-  && curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
   && mkdir -p /usr/src \
   && mkdir -p /etc/nginx/lua \
 	&& tar -zxC /usr/src -f tengine.tar.gz \
 	&& tar -zxC /usr/src -f headers-more-nginx-module.tar.gz \
 	&& tar -zxC /usr/src -f luajit2-$LUA_JIT_VERSION.tar.gz \
-	&& tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
 	&& unzip -xd /usr/src ngx_empty_png.zip \
 	&& unzip -xd /etc/nginx/lua tengine-prometheus.zip \
-	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+	&& rm tengine.tar.gz ngx_empty_png.zip tengine-prometheus.zip luajit2-$LUA_JIT_VERSION.tar.gz headers-more-nginx-module.tar.gz \
   && cd /usr/src/tengine-$TENGINE_VERSION \
   && patch -p1 < /tmp/keep-alive.patch \
   && rm -f /tmp/keep-alive.patch
+
+# https://github.com/weibocom/nginx-upsync-module/pull/222
+RUN curl -fSL https://github.com/weibocom/nginx-upsync-module/archive/refs/tags/v$UPSYNC_VERSION.tar.gz -o nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && tar -zxC /usr/src -f nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && rm nginx-upsync-module-$UPSYNC_VERSION.tar.gz \
+    && cd /usr/src/nginx-upsync-module-$UPSYNC_VERSION \
+    && patch -p1 < /tmp/upsync_max_conns.patch \
+    && rm -f /tmp/upsync_max_conns.patch
 
 RUN cd /usr/src/luajit2-$LUA_JIT_VERSION \
     && make -j$(getconf _NPROCESSORS_ONLN) \
