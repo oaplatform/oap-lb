@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ARG CC_OPTIMIZATION="' -g -Ofast -march=native -ffast-math -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2'"
+ARG CC_OPTIMIZATION="'-g -Ofast -march=native -ffast-math -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2'"
 
 ENV LB_VERSION 5.0.7
 
@@ -13,13 +13,6 @@ ENV UPSYNC_VERSION 2.1.3
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
-
-RUN echo "--${CC_OPTIMIZATION}--"
-RUN echo "--${CC_OPTIMIZATION}--"
-RUN echo "--${CC_OPTIMIZATION}--"
-RUN echo "--${CC_OPTIMIZATION}--"
-RUN echo "--${CC_OPTIMIZATION}--"
-RUN echo "--${CC_OPTIMIZATION}--"
 
 COPY keep-alive.patch /tmp/keep-alive.patch
 COPY upsync_max_conns.patch /tmp/upsync_max_conns.patch
