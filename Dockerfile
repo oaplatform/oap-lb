@@ -110,7 +110,7 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=/usr/src/nginx-upsync-module-$UPSYNC_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
-      --with-cc-opt=$CC_OPTIMIZATION \
+      --with-cc-opt=${CC_OPTIMIZATION} \
       --with-ld-opt='-Wl,-rpath,/usr/local/lib'
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
