@@ -138,19 +138,6 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
   && ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log
 
-RUN curl -fSL http://fcron.free.fr/archives/fcron-$FCRON_VERSION.src.tar.gz -o fcron.tar.gz \
-  && mkdir -p /usr/src \
-	&& tar -zxC /usr/src -f fcron.tar.gz \
-	&& rm fcron.tar.gz \
-  && cd /usr/src/fcron-$FCRON_VERSION \
-  && ./configure \
-    --prefix=/usr \
-    --sysconfdir=/etc \
-    --with-sendmail=no \
-  && make -j$(getconf _NPROCESSORS_ONLN) \
-  && make install \
-  && rm -rf /usr/src/fcron-$FCRON_VERSION
-
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
