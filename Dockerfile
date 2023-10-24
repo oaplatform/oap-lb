@@ -1,8 +1,8 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ARG CC_OPTIMIZATION="' -g -Ofast -march=native -ffast-math -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2'"
+ARG CC_OPTIMIZATION="-Ofast -ffast-math"
 
-ENV LB_VERSION 5.0.7
+ENV LB_VERSION 5.0.8
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
@@ -24,7 +24,6 @@ RUN groupadd --system nginx --gid 101 \
 
 RUN apt update \
     && apt install -y \
-    libhttp-async-perl \
     procps \
     less \
     ncat \
@@ -110,7 +109,7 @@ RUN cd /usr/src/tengine-$TENGINE_VERSION \
       --add-module=/usr/src/nginx-upsync-module-$UPSYNC_VERSION \
       --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_NGINX \
       --add-module=/usr/src/ngx_empty_png-master \
-      --with-cc-opt=$CC_OPTIMIZATION \
+      --with-cc-opt='${CC_OPTIMIZATION}' \
       --with-ld-opt='-Wl,-rpath,/usr/local/lib'
 
 RUN cd /usr/src/tengine-$TENGINE_VERSION \
