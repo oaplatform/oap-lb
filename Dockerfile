@@ -1,6 +1,6 @@
 FROM public.ecr.aws/debian/debian:bullseye-slim
 
-ARG CC_OPTIMIZATION="-O3 -march=native -ffast-math"
+ARG CC_OPTIMIZATION="-Ofast -ffast-math"
 
 ENV LB_VERSION 5.0.7
 
