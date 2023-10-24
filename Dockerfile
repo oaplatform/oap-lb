@@ -2,7 +2,7 @@ FROM public.ecr.aws/debian/debian:bullseye-slim
 
 ARG CC_OPTIMIZATION="-Ofast -ffast-math"
 
-ENV LB_VERSION 5.0.7
+ENV LB_VERSION 5.0.8
 
 ENV TENGINE_VERSION 2.3.3
 ENV LUA_JIT_VERSION 2.1-20220310
